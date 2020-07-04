@@ -1,5 +1,9 @@
+#pragma once
+
 #ifndef GreekAlphabet
 #define GreekAlphabet
+
+#include <string>
 
 #pragma region Description
 /*
@@ -52,107 +56,105 @@
 */
 #pragma endreigion
 
-#pragma region Greek_Capital
-//A 
- #define G_Alpha u8"\u0391" 
-//B 
- #define G_Beta u8"\u0392" 
-//Γ 
- #define G_Gamma u8"\u0393" 
-//Δ 
- #define G_Delta u8"\u0394" 
-//Ε 
- #define G_Epsilon u8"\u0395" 
-//Ζ 
- #define G_Zeta u8"\u0396" 
-//Η 
- #define G_Eta u8"\u0397" 
-//Θ 
- #define G_Theta u8"\u0398" 
-//Ι 
- #define G_Iota u8"\u0399" 
-//Κ 
- #define G_Kappa u8"\u039A" 
-//Λ 
- #define G_Lambda u8"\u039B" 
-//Μ 
- #define G_Mu u8"\u039C" 
-//Ν 
- #define G_Nu u8"\u039D" 
-//Ξ 
- #define G_Xi u8"\u039E" 
-//Ο 
- #define G_Omicron u8"\u039F" 
-//Π 
- #define G_Pi u8"\u03A0" 
-//Ρ 
- #define G_Rho u8"\u03A1" 
-//Σ 
- #define G_Sigma u8"\u03A3" 
-//Τ 
- #define G_Tau u8"\u03A4" 
-//Υ 
- #define G_Upsilon u8"\u03A5" 
-//Φ 
- #define G_Phi u8"\u03A6" 
-//Χ 
- #define G_Chi u8"\u03A7" 
-//Ψ 
- #define G_Psi u8"\u03A8" 
-//Ω 
- #define G_Omega u8"\u03A9" 
-#pragma endregion 그리스어대문자
-
-#pragma region Greek_Small
-//α 
- #define g_Alpha u8"\u03B1" 
-//β 
- #define g_Beta u8"\u03B2" 
-//γ 
- #define g_Gamma u8"\u03B3" 
-//δ 
- #define g_Delta u8"\u03B4" 
-//ε 
- #define g_Epsilon u8"\u03B5" 
-//ζ 
- #define g_Zeta u8"\u03B6" 
-//η 
- #define g_Eta u8"\u03B7" 
-//θ 
- #define g_Theta u8"\u03B8" 
-//ι 
- #define g_Iota u8"\u03B9" 
-//κ 
- #define g_Kappa u8"\u03BA" 
-//λ 
- #define g_Lambda u8"\u03BB" 
-//μ 
- #define g_Mu u8"\u03BC" 
-//ν 
- #define g_Nu u8"\u03BD" 
-//ξ 
- #define g_Xi u8"\u03BE" 
-//ο 
- #define g_Omicron u8"\u03BF" 
-//π 
- #define g_Pi u8"\u03C0" 
-//ρ 
- #define g_Rho u8"\u03C1" 
-//σ 
- #define g_Sigma u8"\u03C3" 
-//τ 
- #define g_Tau u8"\u03C4" 
-//υ 
- #define g_Upsilon u8"\u03C5" 
-//φ 
- #define g_Phi u8"\u03C6" 
-//χ 
- #define g_Chi u8"\u03C7" 
-//ψ 
- #define g_Psi u8"\u03C8" 
-//ω 
- #define g_Omega u8"\u03C9" 
-#pragma endregion 그리스어 소문자
+namespace Greek
+{
+    //A 
+    const std::string Alpha("\u0391"); 
+    //B 
+    const std::string Beta("\u0392"); 
+    //Γ 
+    const std::string Gamma("\u0393"); 
+    //Δ 
+    const std::string Delta("\u0394"); 
+    //Ε 
+    const std::string Epsilon("\u0395"); 
+    //Ζ 
+    const std::string Zeta("\u0396"); 
+    //Η 
+    const std::string Eta("\u0397"); 
+    //Θ 
+    const std::string Theta("\u0398"); 
+    //Ι 
+    const std::string Iota("\u0399"); 
+    //Κ 
+    const std::string Kappa("\u039A"); 
+    //Λ 
+    const std::string Lambda("\u039B"); 
+    //Μ 
+    const std::string Mu("\u039C"); 
+    //Ν 
+    const std::string Nu("\u039D"); 
+    //Ξ 
+    const std::string Xi("\u039E"); 
+    //Ο 
+    const std::string Omicron("\u039F"); 
+    //Π 
+    const std::string Pi("\u03A0"); 
+    //Ρ 
+    const std::string Rho("\u03A1"); 
+    //Σ 
+    const std::string Sigma("\u03A3"); 
+    //Τ 
+    const std::string Tau("\u03A4"); 
+    //Υ 
+    const std::string Upsilon("\u03A5"); 
+    //Φ 
+    const std::string Phi("\u03A6"); 
+    //Χ 
+    const std::string Chi("\u03A7"); 
+    //Ψ 
+    const std::string Psi("\u03A8"); 
+    //Ω 
+    const std::string Omega("\u03A9");
+    //α 
+    const std::string alpha("\u03B1"); 
+    //β 
+    const std::string beta("\u03B2"); 
+    //γ 
+    const std::string gamma("\u03B3"); 
+    //δ 
+    const std::string delta("\u03B4"); 
+    //ε 
+    const std::string epsilon("\u03B5"); 
+    //ζ 
+    const std::string zeta("\u03B6"); 
+    //η 
+    const std::string eta("\u03B7"); 
+    //θ 
+    const std::string theta("\u03B8"); 
+    //ι 
+    const std::string iota("\u03B9"); 
+    //κ 
+    const std::string kappa("\u03BA"); 
+    //λ 
+    const std::string lambda("\u03BB"); 
+    //μ 
+    const std::string mu("\u03BC"); 
+    //ν 
+    const std::string nu("\u03BD"); 
+    //ξ 
+    const std::string xi("\u03BE"); 
+    //ο 
+    const std::string omicron("\u03BF"); 
+    //π 
+    const std::string pi("\u03C0"); 
+    //ρ 
+    const std::string rho("\u03C1"); 
+    //σ 
+    const std::string sigma("\u03C3"); 
+    //τ 
+    const std::string tau("\u03C4"); 
+    //υ 
+    const std::string upsilon("\u03C5"); 
+    //φ 
+    const std::string phi("\u03C6"); 
+    //χ 
+    const std::string chi("\u03C7"); 
+    //ψ 
+    const std::string psi("\u03C8"); 
+    //ω 
+    const std::string omega("\u03C9");
+}
 
 //VScode 터미널에서 유니코드를 출력시키기 전에 실행시켜줘야 합니다.
 bool UseUnicodeInVSCode()

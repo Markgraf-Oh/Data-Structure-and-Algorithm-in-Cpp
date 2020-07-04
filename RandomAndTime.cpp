@@ -61,12 +61,8 @@ int main()
     auto deltatime = end_point - start_point;
     GreekAlphabet::UseUnicodeInVSCode();
     auto deltamicroseconds = std::chrono::duration_cast<std::chrono::microseconds>(deltatime);
-    std::cout<<"time = "<<deltamicroseconds.count()<< g_Mu << "s"<<std::endl;
+    std::cout<<"time = "<<deltamicroseconds.count()<< Greek::mu << "s"<<std::endl;
     
     std::chrono::milliseconds deltamilliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(end_point - start_point);
     std::cout<<"time = "<<deltamilliseconds.count()<<"ms"<<std::endl;
-    
-    
-    
-    
 }
