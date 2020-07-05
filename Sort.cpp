@@ -5,6 +5,7 @@
 #include <chrono>
 #include <string>
 #include <vector>
+#include <stack>
 #include <algorithm>
 #include "GreekAlphabet.h"
 
@@ -45,6 +46,20 @@ void ShakerSort(std::vector<T>& target_vector, bool(*compare)(const T&, const T&
 template<typename T>
 void ShellSort1(std::vector<T>& target_vector,  bool(*compare)(const T&, const T&));
 
+
+/** 셸 정렬 알고리즘2. 단순 삽입 정렬 알고리즘의 업그레이드 버젼. Quicksort 이전 까진 최고. O^1.25
+ * @param target_vector vector to sort
+ * @param compare       compare function's pointer. get left side value and right side value. returns true if sorted, false if needs swap;
+*/
+template<typename T>
+void ShellSort2(std::vector<T>& target_vector,  bool(*compare)(const T&, const T&));
+
+/** 엄청빠른 퀵 솔트!
+ * @param target_vector vector to sort
+ * @param compare       compare function's pointer. get left side value and right side value. returns true if sorted, false if needs swap;
+*/
+template<typename T>
+void QuickSort(std::vector<T>& target_vector,  bool(*compare)(const T&, const T&));
 
 //ftr >= bck
 template<typename T>
@@ -140,7 +155,7 @@ int main(int argc, char* argv[])
         //std::cout<<*iter<< " ";
     }
     std::cout<<std::string(30, '-')<<std::endl;
-
+    /*
     TestSortingAlgorithm<int>(numbers,
                               &BubbleSort<int>,
                               [](const int & lsv, const int & rsv)->bool{return lsv>=rsv;},
@@ -155,7 +170,16 @@ int main(int argc, char* argv[])
                               &ShellSort1<int>,
                               [](const int & lsv, const int & rsv)->bool{return lsv>=rsv;},
                               "Shell Sort #1");
+    */
+    TestSortingAlgorithm<int>(numbers,
+                              &ShellSort2<int>,
+                              [](const int& lsv, const int & rsv)->bool{return lsv>=rsv;},
+                              "Sheel Sort #2");
 
+    TestSortingAlgorithm<int>(numbers,
+                              &QuickSort<int>,
+                              [](const int& lsv, const int & rsv)->bool{return lsv>=rsv;},
+                              "Quick Sort");
     return 0;
 }
 
@@ -174,7 +198,6 @@ void TestSortingAlgorithm(std::vector<T>& target_vector, void(*sorting_algo)(std
     std::chrono::time_point<std::chrono::high_resolution_clock> end_point 
         = std::chrono::high_resolution_clock::now();
     
-    //그냥 실전에선 auto 쓰자...
     //std::chrono::duration<long long, std::nano>
     auto deltatime = end_point - start_point;
     
@@ -272,7 +295,6 @@ void ShakerSort(std::vector<T>& target_vector, bool(*compare)(const T&, const T&
 template<typename T>
 void ShellSort1(std::vector<T>& target_vector,  bool(*compare)(const T&, const T&))
 {
-    //현재 책보면서 하는 중이라 좀 느림
     //증분값, 컨테이너를 자를 단위이자 비교할 숫자들 사이의 간격
     int h = 1;
     int n = target_vector.size();
@@ -293,6 +315,79 @@ void ShellSort1(std::vector<T>& target_vector,  bool(*compare)(const T&, const T
                 }
                 target_vector[k] = temp;   
             }
+        }
+    }
+}
+
+template<typename T>
+void ShellSort2(std::vector<T>& target_vector,  bool(*compare)(const T&, const T&))
+{
+    //증분값, 컨테이너를 자를 단위이자 비교할 숫자들 사이의 간격
+    int h = 1;
+    int n = target_vector.size();
+    while(h<n/9) h = h*3 +1;
+    for(; h>0; h/=3)
+    {
+        for(int i = h; i<n; i++)
+        {
+            T temp = target_vector[i];
+            int j = i;
+            while(j>=h)
+            {
+                if(!compare(target_vector[j-h], temp))
+                {
+                    target_vector[j] = target_vector[j-h];
+                    j-=h;
+                }
+                else break;
+            }
+            target_vector[j] = temp;
+        }
+    }
+}
+
+template<typename T>
+void QuickSort(std::vector<T>& target_vector,  bool(*compare)(const T&, const T&))
+{
+    //stack을 활용한 비재귀적 방식.
+
+    struct SortingGroup
+    {
+        int left_point;
+        int right_point;
+        SortingGroup(int left_point, int right_point) : left_point(left_point), right_point(right_point){}
+    };
+
+    std::stack<SortingGroup> group_stack;
+    group_stack.push(SortingGroup(0, target_vector.size()-1));
+
+    while(!group_stack.empty())
+    {
+        SortingGroup current_group = group_stack.top();
+        group_stack.pop();
+        int left_point = current_group.left_point;
+        int right_point = current_group.right_point;
+        int pivot = target_vector[(left_point+right_point)/2];
+
+        do
+        {
+            while(compare(target_vector[left_point], pivot)&&(target_vector[left_point]!=pivot)) left_point++;
+            while(compare(pivot, target_vector[right_point])&&(target_vector[right_point]!=pivot)) right_point--;
+            if(left_point<=right_point)
+            {
+                std::swap(target_vector[left_point], target_vector[right_point]);
+                left_point++; right_point--;
+            }
+        }while(left_point<=right_point);
+
+        if(current_group.left_point<right_point)
+        {
+            group_stack.push(SortingGroup(current_group.left_point, right_point));
+        }
+
+        if(left_point<current_group.right_point)
+        {
+            group_stack.push(SortingGroup(left_point, current_group.right_point));
         }
     }
 }
