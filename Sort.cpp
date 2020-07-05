@@ -7,6 +7,7 @@
 #include <vector>
 #include <stack>
 #include <algorithm>
+#include <queue>
 #include "GreekAlphabet.h"
 
 //g++ 컴파일, 실행
@@ -60,6 +61,21 @@ void ShellSort2(std::vector<T>& target_vector,  bool(*compare)(const T&, const T
 */
 template<typename T>
 void QuickSort(std::vector<T>& target_vector,  bool(*compare)(const T&, const T&));
+
+/** 머지솔트 실행 함수
+ * @param target_vector vector to sort
+ * @param compare       compare function's pointer. get left side value and right side value. returns true if sorted, false if needs swap;
+*/
+template<typename T>
+void Mergesort(std::vector<T>& target_vector, bool(*compare)(const T&, const T&));
+
+/** Mergesort 내부에서 돌아갈 재귀함수
+ * @param target_vector vector to sort
+ * @param buff          buff vector for merging. should reserve capacity as much as the size of target_vector
+ * @param compare       compare function's pointer. get left side value and right side value. returns true if sorted, false if needs swap;
+*/
+template<typename T>
+void __RecurMergesort(std::vector<T>& target_vector, bool(*compare)(const T&, const T&), std::vector<T>& buff, int left_end, int right_end);
 
 //ftr >= bck
 template<typename T>
@@ -155,7 +171,7 @@ int main(int argc, char* argv[])
         //std::cout<<*iter<< " ";
     }
     std::cout<<std::string(30, '-')<<std::endl;
-    /*
+    
     TestSortingAlgorithm<int>(numbers,
                               &BubbleSort<int>,
                               [](const int & lsv, const int & rsv)->bool{return lsv>=rsv;},
@@ -170,16 +186,21 @@ int main(int argc, char* argv[])
                               &ShellSort1<int>,
                               [](const int & lsv, const int & rsv)->bool{return lsv>=rsv;},
                               "Shell Sort #1");
-    */
+    
     TestSortingAlgorithm<int>(numbers,
                               &ShellSort2<int>,
                               [](const int& lsv, const int & rsv)->bool{return lsv>=rsv;},
-                              "Sheel Sort #2");
+                              "Shell Sort #2");
 
     TestSortingAlgorithm<int>(numbers,
                               &QuickSort<int>,
                               [](const int& lsv, const int & rsv)->bool{return lsv>=rsv;},
                               "Quick Sort");
+
+    TestSortingAlgorithm<int>(numbers,
+                              &Mergesort<int>,
+                              [](const int& lsv, const int & rsv)->bool{return lsv>=rsv;},
+                              "Merge Sort");
     return 0;
 }
 
@@ -390,4 +411,55 @@ void QuickSort(std::vector<T>& target_vector,  bool(*compare)(const T&, const T&
             group_stack.push(SortingGroup(left_point, current_group.right_point));
         }
     }
+}
+
+template<typename T>
+void Mergesort(std::vector<T>& target_vector, bool(*compare)(const T&, const T&))
+{
+    if(target_vector.empty()) return;
+    std::vector<T> buffer;
+    try
+    {
+        buffer.reserve(target_vector.size()/2 +2);
+    }
+    catch(const std::length_error& e)
+    {
+        std::cerr << "There is not enough space for buffer" << '\n';
+    }
+    __RecurMergesort(target_vector, compare, buffer, 0, target_vector.size()-1);
+}
+
+template<typename T>
+void __RecurMergesort(std::vector<T>& target_vector, bool(*compare)(const T&, const T&), std::vector<T>& buff, int left_end, int right_end)
+{
+    //큐가아니라 역시 벡터가... 어차피 푸쉬 백 쓰럭면...
+    if(left_end>=right_end) return;
+
+    int center = (left_end+right_end)/2;
+    __RecurMergesort(target_vector, compare, buff, left_end, center);
+    __RecurMergesort(target_vector, compare, buff, center+1, right_end);
+
+    buff.clear();
+    for(int i=left_end; i<=center; i++)
+    {
+        buff.push_back(target_vector[i]);
+    }
+
+    auto buff_iter = buff.begin();
+    int right_point = center+1;
+    int input_point = left_end;
+
+    while((right_point<=right_end)&&(buff_iter!=buff.end()))
+    {
+        target_vector[input_point++] = compare(*(buff_iter), target_vector[right_point]) ? *(buff_iter++) : target_vector[right_point++];
+    }
+
+    //만약 버퍼에 있는 T를 모두 옮긴 상태라면, 남아잇는 오른쪽 절반은 이미 정렬이 완료된 상태이므로 그냥 냅두면 된다.
+    //하지만 오른쪽 절반에 있는 T들을 먼저 모두 옮겼다면, 남은 빈칸에 버퍼에 남았있는 것을 옮겨줘야 한다.
+    //버퍼에 남아있는 것 옮기기
+    while(buff_iter!=buff.end())
+    {
+        target_vector[input_point++] = *(buff_iter++);
+    }
+    return;
 }
