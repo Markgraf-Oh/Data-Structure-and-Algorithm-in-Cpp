@@ -10,12 +10,6 @@
 #include <queue>
 #include "GreekAlphabet.h"
 
-//g++ 컴파일, 실행
-/*
-  g++ -o .\BubbleSort.exe BubbleSort.cpp
-  .\BubbleSort.exe
-*/
-
 //mix vector randomly
 template<typename T>
 void MixVector(std::vector<T>& target_vector);
@@ -40,20 +34,12 @@ void BubbleSort(std::vector<T>& target_vector, bool(*compare)(const T&, const T&
 template<typename T>
 void ShakerSort(std::vector<T>& target_vector, bool(*compare)(const T&, const T&));
 
-/** 셸 정렬 알고리즘. 단순 삽입 정렬 알고리즘의 업그레이드 버젼. Quicksort 이전 까진 최고.
+/** 셸 정렬 알고리즘. 단순 삽입 정렬 알고리즘의 업그레이드 버젼. Quicksort 이전 까진 최고. O^1.25
  * @param target_vector vector to sort
  * @param compare       compare function's pointer. get left side value and right side value. returns true if sorted, false if needs swap;
 */
 template<typename T>
-void ShellSort1(std::vector<T>& target_vector,  bool(*compare)(const T&, const T&));
-
-
-/** 셸 정렬 알고리즘2. 단순 삽입 정렬 알고리즘의 업그레이드 버젼. Quicksort 이전 까진 최고. O^1.25
- * @param target_vector vector to sort
- * @param compare       compare function's pointer. get left side value and right side value. returns true if sorted, false if needs swap;
-*/
-template<typename T>
-void ShellSort2(std::vector<T>& target_vector,  bool(*compare)(const T&, const T&));
+void ShellSort(std::vector<T>& target_vector,  bool(*compare)(const T&, const T&));
 
 /** 엄청빠른 퀵 솔트!
  * @param target_vector vector to sort
@@ -67,15 +53,43 @@ void QuickSort(std::vector<T>& target_vector,  bool(*compare)(const T&, const T&
  * @param compare       compare function's pointer. get left side value and right side value. returns true if sorted, false if needs swap;
 */
 template<typename T>
-void Mergesort(std::vector<T>& target_vector, bool(*compare)(const T&, const T&));
+void MergeSort(std::vector<T>& target_vector, bool(*compare)(const T&, const T&));
 
-/** Mergesort 내부에서 돌아갈 재귀함수
+/** MergeSort 내부에서 돌아갈 재귀함수
  * @param target_vector vector to sort
  * @param buff          buff vector for merging. should reserve capacity as much as the size of target_vector
  * @param compare       compare function's pointer. get left side value and right side value. returns true if sorted, false if needs swap;
 */
 template<typename T>
 void __RecurMergesort(std::vector<T>& target_vector, bool(*compare)(const T&, const T&), std::vector<T>& buff, int left_end, int right_end);
+
+/** std::vector를 힙형태로 정렬하는 함수
+ * @param heap_vector   vector to rearange by heap rule
+ * @param compare       compare function's pointer. bool(*)(const T& child, const T& parent) return true if Hierarchically correct.
+ *                      bool(*)(const T& child, const T& parent), 둘의 계층관계가 올바르면 true를 return 합니다.
+ * @param top           아래쪽으로 내려보낼 목표의 heap_vector상에서의 위치
+ * @param bottom        heap_vector의 바닥. 목표는 이 지점까지만 내려갈 수 있습니다.
+*/
+template<typename T>
+void __DownHeap(std::vector<T>& heap_vector, bool(*compare)(const T&/*child*/, const T&/*parent*/), int top, int bottom);
+
+/** std::vector를 힙형태로 정렬하는 함수
+ * @param heap_vector   vector to rearange by heap rule
+ * @param compare       compare function's pointer. bool(*)(const T& child, const T& parent) return true if Hierarchically correct.
+*/
+template<typename T>
+void RearangeHeapVector(std::vector<T>& heap_vector, bool(*compare)(const T&/*child*/, const T&/*parent*/));
+
+/** 힙솔트 실행함수.
+ * @param target_vector vector to sort
+ * @param compare       compare function's pointer. get left side value and right side value. returns true if sorted, false if needs swap;
+*/
+template<typename T>
+void HeapSort(std::vector<T>& target_vector, bool(*compare)(const T&, const T&));
+
+
+
+//IsHeapVector? 함수는 굳이 넣을 필요가.. 없으려나
 
 //ftr >= bck
 template<typename T>
@@ -181,16 +195,11 @@ int main(int argc, char* argv[])
                               &ShakerSort<int>,
                               [](const int & lsv, const int & rsv)->bool{return lsv>=rsv;},
                               "Shaker Sort");
-
-    TestSortingAlgorithm<int>(numbers,
-                              &ShellSort1<int>,
-                              [](const int & lsv, const int & rsv)->bool{return lsv>=rsv;},
-                              "Shell Sort #1");
     
     TestSortingAlgorithm<int>(numbers,
-                              &ShellSort2<int>,
+                              &ShellSort<int>,
                               [](const int& lsv, const int & rsv)->bool{return lsv>=rsv;},
-                              "Shell Sort #2");
+                              "Shell Sort");
 
     TestSortingAlgorithm<int>(numbers,
                               &QuickSort<int>,
@@ -198,10 +207,15 @@ int main(int argc, char* argv[])
                               "Quick Sort");
 
     TestSortingAlgorithm<int>(numbers,
-                              &Mergesort<int>,
+                              &MergeSort<int>,
                               [](const int& lsv, const int & rsv)->bool{return lsv>=rsv;},
                               "Merge Sort");
-    return 0;
+
+    TestSortingAlgorithm<int>(numbers,
+                              &HeapSort<int>,
+                              [](const int& lsv, const int & rsv)->bool{return lsv>=rsv;},
+                              "Heap Sort");
+
 }
 
 template<typename T>
@@ -314,34 +328,7 @@ void ShakerSort(std::vector<T>& target_vector, bool(*compare)(const T&, const T&
 }
 
 template<typename T>
-void ShellSort1(std::vector<T>& target_vector,  bool(*compare)(const T&, const T&))
-{
-    //증분값, 컨테이너를 자를 단위이자 비교할 숫자들 사이의 간격
-    int h = 1;
-    int n = target_vector.size();
-    while(h<n/9) h = h*3 +1;
-    for(; h>0; h/=3)
-    {
-        //각 그룹별로 하면 아래와 같이 해야하지만, 어차피 j는 h~n-1까지 한번씩만 거친다. 따라서 두 loop르 하나로 합칠 수 있다.
-        for(int i=0; i<n; i+=h)
-        {
-            for(int j=i+h; j<n; j+=h)
-            {
-                T temp = target_vector[j];
-                int k=j;
-                while((k-h>=0)&&(!compare(target_vector[k-h], temp)))
-                {
-                    target_vector[k] = target_vector[k-h];
-                    k-=h;
-                }
-                target_vector[k] = temp;   
-            }
-        }
-    }
-}
-
-template<typename T>
-void ShellSort2(std::vector<T>& target_vector,  bool(*compare)(const T&, const T&))
+void ShellSort(std::vector<T>& target_vector,  bool(*compare)(const T&, const T&))
 {
     //증분값, 컨테이너를 자를 단위이자 비교할 숫자들 사이의 간격
     int h = 1;
@@ -414,7 +401,7 @@ void QuickSort(std::vector<T>& target_vector,  bool(*compare)(const T&, const T&
 }
 
 template<typename T>
-void Mergesort(std::vector<T>& target_vector, bool(*compare)(const T&, const T&))
+void MergeSort(std::vector<T>& target_vector, bool(*compare)(const T&, const T&))
 {
     if(target_vector.empty()) return;
     std::vector<T> buffer;
@@ -462,4 +449,54 @@ void __RecurMergesort(std::vector<T>& target_vector, bool(*compare)(const T&, co
         target_vector[input_point++] = *(buff_iter++);
     }
     return;
+}
+
+template<typename T>
+void __DownHeap(std::vector<T>& heap_vector, bool(*compare)(const T&/*child*/, const T&/*parent*/), int top, int bottom)
+{
+    T temp = heap_vector[top];
+    int current = top;
+    int child;
+    while((current*2)+1<=bottom)
+    {
+        int left_child = (current*2)+1;
+        int right_child = (current*2)+2;
+
+        child = ((right_child<=bottom)
+                && compare(heap_vector[left_child], heap_vector[right_child]))
+                ? right_child : left_child;
+        
+        if(compare(heap_vector[child], temp))
+        {
+            break;
+        }
+        else
+        {
+            heap_vector[current] = heap_vector[child];
+            current = child;
+        }
+    }
+    heap_vector[current] = temp;
+}
+
+template<typename T>
+void RearangeHeapVector(std::vector<T>& heap_vector, bool(*compare)(const T&/*child*/, const T&/*parent*/))
+{
+    //정렬후 실제 배치는 상위값일 수록 왼쪽에 있지만, 힙정렬까지 하면 상위값이 맨 오른쪽으로  간다
+    //만약 이미 힙정렬이 되어 있다면 시간복잡도 O(n)이니 걍 이미정렬되어 있는 녀석에도 때려박아도 될듯
+    for(int i=(heap_vector.size()-2)/2; i>=0; i--)
+    {
+        __DownHeap(heap_vector, compare, i, heap_vector.size()-1);
+    }
+}
+
+template<typename T>
+void HeapSort(std::vector<T>& target_vector, bool(*compare)(const T&, const T&))
+{
+    RearangeHeapVector(target_vector, compare);
+    for(int input_loc = target_vector.size()-1; input_loc>0; input_loc--)
+    {
+        std::swap(target_vector[0], target_vector[input_loc]);
+        __DownHeap(target_vector, compare, 0, input_loc-1);
+    }
 }
