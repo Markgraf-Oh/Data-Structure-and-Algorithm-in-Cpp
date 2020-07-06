@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef GreekAlphabet
 #define GreekAlphabet
 
@@ -154,13 +152,15 @@ namespace Greek
     const std::string psi("\u03C8"); 
     //ω 
     const std::string omega("\u03C9");
+
+    //VScode 터미널에서 유니코드를 출력시키기 전에 실행시켜줘야 합니다.
+    bool UseUnicodeInVSCode()
+    {
+        // Enable buffering to prevent VS from chopping up UTF-8 byte sequences
+        return setvbuf(stdout, nullptr, _IOFBF, 1000)==0;
+    }
 }
 
-//VScode 터미널에서 유니코드를 출력시키기 전에 실행시켜줘야 합니다.
-bool UseUnicodeInVSCode()
-{
-    // Enable buffering to prevent VS from chopping up UTF-8 byte sequences
-    return setvbuf(stdout, nullptr, _IOFBF, 1000)==0;
-}
+
 
 #endif
