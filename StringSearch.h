@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 #include <chrono>
+#include <climits>
+#include "GreekAlphabet.h"
 
 namespace StringSearch
 {
@@ -34,6 +36,18 @@ namespace StringSearch
      *          본 함수가 돌아가는 동안 해당 문자열이 다른 함수에 의해 변형될 가능성이 있다면 const std::string으로 바꿔주면 됩니다.
     */
     std::vector<int> BoyerMooreSearch(const std::string & target_string, const std::string & key_string);
+    /** Boyer-Moore Algorithm으로 문자열에서 빠르게 키워드의 위치를 찾습니다.
+     * @param searching_algo    문자열 탐색 알고리즘 입니다. target_string에서 찾은 모든 key_string의 위치들을 vector<int>에 넣어 return 합니다.
+     * @param algo_name         콘솔에 보여질 알고리즘의 이름입니다.
+     * @param target_string     단어를 찾을 문자열입니다.
+     * @param key_string        찾을 단어의 문자열입니다.
+     * @param target_title      탐색 문자열의 제목입니다. default 값은 "Target String"입니다.
+    */
+    void TestStringSearchAlgorithm(std::vector<int> (*searching_algo)(const std::string &/*target string*/, const std::string &/*key string*/),
+                                   const std::string & algo_name,
+                                   const std::string & target_string,
+                                   const std::string & key_string,
+                                   const std::string target_title = "Target String");
 }
 
 #include "StringSearch.hpp"
