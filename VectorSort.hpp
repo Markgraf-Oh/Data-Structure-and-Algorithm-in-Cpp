@@ -119,6 +119,7 @@ namespace VectorSort
     template<typename T>
     void ShellSort(std::vector<T>& target_vector,  bool(*compare)(const T&, const T&))
     {
+        if(target_vector.empty()) return;
         //증분값, 컨테이너를 자를 단위이자 비교할 숫자들 사이의 간격
         int h = 1;
         int n = target_vector.size();
@@ -144,7 +145,7 @@ namespace VectorSort
     void QuickSort(std::vector<T>& target_vector,  bool(*compare)(const T&, const T&))
     {
         //stack을 활용한 비재귀적 방식.
-
+        if(target_vector.empty()) return;
         struct SortingGroup
         {
             int left_point;
@@ -193,7 +194,6 @@ namespace VectorSort
     template<typename T>
     void MergeSort(std::vector<T>& target_vector, bool(*compare)(const T&, const T&))
     {
-        if(target_vector.empty()) return;
         std::vector<T> buffer;
         try
         {
